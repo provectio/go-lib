@@ -2,7 +2,7 @@ package interfaces
 
 import "strconv"
 
-func toBool(MyInterface interface{}) bool {
+func InterfaceToBool(MyInterface interface{}) bool {
 	if MyInterface == nil {
 		return false
 	}
@@ -27,5 +27,30 @@ func toBool(MyInterface interface{}) bool {
 		return false
 	default:
 		return false
+	}
+}
+
+func InterfaceToFloat64(MyInterface interface{}) float64 {
+	if MyInterface == nil {
+		return 0
+	}
+	switch i := MyInterface.(type) {
+	case float64:
+		return i
+	case int:
+		return float64(i)
+	case string:
+		MyFloat64, err := strconv.ParseFloat(i, 64)
+		if err != nil {
+			return 0
+		}
+		return MyFloat64
+	case bool:
+		if i {
+			return 1
+		}
+		return 0
+	default:
+		return 0
 	}
 }
