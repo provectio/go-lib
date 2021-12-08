@@ -2,14 +2,14 @@ package slice
 
 import "sort"
 
-func Contain(slice []string, item string) bool {
-	set := make(map[string]struct{}, len(slice))
+func Contains(slice []string, item string) bool {
 	for _, s := range slice {
-		set[s] = struct{}{}
+		if s == item {
+			return true
+		}
 	}
 
-	_, ok := set[item]
-	return ok
+	return false
 }
 
 func Dedup(slice []string) (result []string) {
