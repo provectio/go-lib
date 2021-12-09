@@ -1,9 +1,12 @@
 package webreq
 
 import (
+	"errors"
 	"io"
 	"net/http"
 	"os"
+	"strconv"
+	"strings"
 )
 
 // DownloadFile will download a url to a local file. It's efficient because it will
@@ -16,6 +19,10 @@ func DownloadFile(filepath string, url string) error {
 		return err
 	}
 	defer resp.Body.Close()
+
+	if status := strconv.Itoa(resp.StatusCode); !strings.HasPrefix(status, "2") && !strings.HasPrefix(status, "3") {
+		return errors.New(url + " return bad status code: " + status)
+	}
 
 	// Create the file
 	out, err := os.Create(filepath)
