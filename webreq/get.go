@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"errors"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -28,7 +29,7 @@ func GET(url string, headers HeadersKey) (result []byte, statusCode int, err err
 		req.Header.Set(keyName, keyValue)
 	}
 
-	req.Header.Set("Content-Type", `application/json`)
+	req.Header.Set("Content-Type", `application/json; charset=utf8`)
 	if GzipSupport {
 		req.Header.Set("Accept-Encoding", `gzip`)
 	}
@@ -43,7 +44,7 @@ func GET(url string, headers HeadersKey) (result []byte, statusCode int, err err
 
 	statusCode = resp.StatusCode
 
-	if contentJSON := resp.Header.Get("Content-Type") == "application/json"; contentJSON && resp.Header.Get("Content-Encoding") == "gzip" {
+	if contentJSON := strings.Contains(resp.Header.Get("Content-Type"), "application/json"); contentJSON && resp.Header.Get("Content-Encoding") == "gzip" {
 		var reader *gzip.Reader
 		reader, err = gzip.NewReader(resp.Body)
 		if err != nil {

@@ -44,7 +44,7 @@ func POST(url string, headers HeadersKey, postObj interface{}) (result []byte, s
 		req.Header.Set(keyName, keyValue)
 	}
 
-	req.Header.Set("Content-Type", `application/json`)
+	req.Header.Set("Content-Type", `application/json ; charset=utf8`)
 	if GzipSupport {
 		req.Header.Set("Content-Encoding", `gzip`)
 	}
@@ -59,7 +59,19 @@ func POST(url string, headers HeadersKey, postObj interface{}) (result []byte, s
 
 	statusCode = resp.StatusCode
 
-	result, err = io.ReadAll(resp.Body)
+	if resp.Header.Get("Content-Encoding") == "gzip" {
+		var reader *gzip.Reader
+		reader, err = gzip.NewReader(resp.Body)
+		if err != nil {
+			return
+		}
+		reader.Close()
+		buf := new(bytes.Buffer)
+		buf.ReadFrom(reader)
+		result = buf.Bytes()
+	} else {
+		result, err = io.ReadAll(resp.Body)
+	}
 
 	return
 }
