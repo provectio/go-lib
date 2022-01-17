@@ -67,19 +67,18 @@ func POST(url string, headers HeadersKey, postObj interface{}) (result []byte, s
 		return
 	}
 
+	var reader io.ReadCloser
 	if resp.Header.Get("Content-Encoding") == "gzip" {
-		var reader *gzip.Reader
 		reader, err = gzip.NewReader(resp.Body)
 		if err != nil {
 			return
 		}
-		buf := new(bytes.Buffer)
-		buf.ReadFrom(reader)
 		reader.Close()
-		result = buf.Bytes()
 	} else {
-		result, err = io.ReadAll(resp.Body)
+		reader = resp.Body
 	}
+
+	result, err = io.ReadAll(reader)
 
 	return
 }

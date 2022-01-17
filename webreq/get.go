@@ -1,9 +1,10 @@
 package webreq
 
 import (
-	"bytes"
 	"compress/gzip"
 	"errors"
+	"io"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
@@ -44,23 +45,23 @@ func GET(url string, headers HeadersKey) (result []byte, statusCode int, err err
 
 	statusCode = resp.StatusCode
 
+	var reader io.ReadCloser
 	if contentJSON := strings.Contains(resp.Header.Get("Content-Type"), "application/json"); contentJSON && resp.Header.Get("Content-Encoding") == "gzip" {
-		var reader *gzip.Reader
 		reader, err = gzip.NewReader(resp.Body)
 		if err != nil {
 			return
 		}
-		buf := new(bytes.Buffer)
-		buf.ReadFrom(reader)
 		reader.Close()
-		result = buf.Bytes()
 	} else if contentJSON {
-		buf := new(bytes.Buffer)
-		buf.ReadFrom(resp.Body)
-		result = buf.Bytes()
+		reader = resp.Body
 	} else {
 		err = errors.New("bad Content-Type return")
+		if err != nil {
+			return
+		}
 	}
+
+	result, err = ioutil.ReadAll(reader)
 
 	return
 }
