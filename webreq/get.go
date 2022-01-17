@@ -19,7 +19,7 @@ func GET(url string, headers HeadersKey) (result []byte, statusCode int, err err
 	}
 
 	var req *http.Request
-	req, err = http.NewRequest(http.MethodPost, url, nil)
+	req, err = http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return
 	}
