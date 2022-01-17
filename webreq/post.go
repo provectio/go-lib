@@ -61,9 +61,10 @@ func POST(url string, headers HeadersKey, postObj interface{}) (result []byte, s
 	defer resp.Body.Close()
 
 	statusCode = resp.StatusCode
-
 	if statusCode > 305 {
 		err = errors.New("bad status code returned")
+		return
+	} else if statusCode == 204 {
 		return
 	}
 

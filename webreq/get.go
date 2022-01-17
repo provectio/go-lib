@@ -44,6 +44,12 @@ func GET(url string, headers HeadersKey) (result []byte, statusCode int, err err
 	defer resp.Body.Close()
 
 	statusCode = resp.StatusCode
+	if statusCode > 305 {
+		err = errors.New("bad status code returned")
+		return
+	} else if statusCode == 204 {
+		return
+	}
 
 	var reader io.ReadCloser
 	if contentJSON := strings.Contains(resp.Header.Get("Content-Type"), "application/json"); contentJSON && resp.Header.Get("Content-Encoding") == "gzip" {
