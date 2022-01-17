@@ -50,9 +50,9 @@ func GET(url string, headers HeadersKey) (result []byte, statusCode int, err err
 		if err != nil {
 			return
 		}
-		reader.Close()
 		buf := new(bytes.Buffer)
 		buf.ReadFrom(reader)
+		reader.Close()
 		result = buf.Bytes()
 	} else if contentJSON {
 		buf := new(bytes.Buffer)
