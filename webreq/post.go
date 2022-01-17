@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"compress/gzip"
 	"encoding/json"
-	"errors"
 	"io"
 	"net/http"
 	"time"
@@ -61,10 +60,7 @@ func POST(url string, headers HeadersKey, postObj interface{}) (result []byte, s
 	defer resp.Body.Close()
 
 	statusCode = resp.StatusCode
-	if statusCode > 305 {
-		err = errors.New("bad status code returned")
-		return
-	} else if statusCode == 204 {
+	if statusCode > 305 || statusCode == 204 {
 		return
 	}
 

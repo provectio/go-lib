@@ -44,10 +44,7 @@ func GET(url string, headers HeadersKey) (result []byte, statusCode int, err err
 	defer resp.Body.Close()
 
 	statusCode = resp.StatusCode
-	if statusCode > 305 {
-		err = errors.New("bad status code returned")
-		return
-	} else if statusCode == 204 {
+	if statusCode > 305 || statusCode == 204 {
 		return
 	}
 
