@@ -1,17 +1,17 @@
 package webreq
 
 import (
+	"bytes"
 	"compress/gzip"
-	"encoding/json"
 	"errors"
 	"net/http"
 	"time"
 )
 
 // GET:
-// Web request with method POST into Json.
+// Web request with method GET.
 // Not usefull to set "Content-Type" : "applciation/json" in headers
-func GET(url string, headers HeadersKey, resultObj *interface{}) (statusCode int, err error) {
+func GET(url string, headers HeadersKey) (result []byte, statusCode int, err error) {
 
 	client := &http.Client{
 		CheckRedirect: http.DefaultClient.CheckRedirect,
@@ -50,9 +50,13 @@ func GET(url string, headers HeadersKey, resultObj *interface{}) (statusCode int
 			return
 		}
 		reader.Close()
-		err = json.NewDecoder(reader).Decode(resultObj)
+		buf := new(bytes.Buffer)
+		buf.ReadFrom(reader)
+		result = buf.Bytes()
 	} else if contentJSON {
-		err = json.NewDecoder(resp.Body).Decode(resultObj)
+		buf := new(bytes.Buffer)
+		buf.ReadFrom(resp.Body)
+		result = buf.Bytes()
 	} else {
 		err = errors.New("bad Content-Type return")
 	}
